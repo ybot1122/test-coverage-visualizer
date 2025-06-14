@@ -7,6 +7,7 @@ import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
 import { TestRecommender } from "./TestRecommender";
+import { LineInfo } from "./LineInfo";
 
 const dark_bg: SyntaxHighlighterTheme[] = [
   "darcula",
@@ -30,6 +31,11 @@ export function SourceViewer({
 }) {
   const [source, setSource] = useState("");
   const [error, setError] = useState<string>();
+  const [infoCoords, setInfoCoords] = useState<{
+    x: number;
+    y: number;
+    line: number;
+  }>();
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -86,6 +92,14 @@ export function SourceViewer({
         </p>
       )}
       <div className="grid grid-cols-2">
+        {infoCoords && (
+          <LineInfo
+            line={infoCoords.line}
+            x={infoCoords.x}
+            y={infoCoords.y}
+            coverage={coverage}
+          />
+        )}
         <div>
           <SyntaxHighlighter
             language={language}
@@ -93,15 +107,27 @@ export function SourceViewer({
             showInlineLineNumbers
             style={themeMap[theme]}
             lineProps={(lineNumber) => {
+              const id = `line-${lineNumber}`;
               return {
                 key: lineNumber,
-                id: `line-${lineNumber}`,
+                id,
                 className: `${
                   linesStatus[lineNumber] === "uncovered"
                     ? uncovered_highlighter
                     : ""
                 }`,
-                onMouseEnter: (e) => console.log(e, lineNumber),
+                onPointerEnter: (e) => {
+                  document.getElementById(id)?.classList.add("hovered-line");
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = rect.left + window.scrollX;
+                  const y = rect.top + window.scrollY;
+                  setInfoCoords({ line: lineNumber, x, y });
+                  console.log(e, lineNumber);
+                },
+                onPointerLeave: (e) => {
+                  document.getElementById(id)?.classList.remove("hovered-line");
+                  setInfoCoords(undefined);
+                },
               };
             }}
             wrapLines

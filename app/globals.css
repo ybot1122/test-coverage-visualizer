@@ -32,3 +32,6 @@ a {
   color: var(--link);
 }
 
+.hovered-line {
+  background: lightblue;
+}

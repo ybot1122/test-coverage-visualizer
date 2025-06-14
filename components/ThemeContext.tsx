@@ -1,7 +1,7 @@
 import {
   SyntaxHighlighterTheme,
   syntaxHighlighterThemes,
-} from "@/types/SyntaxHighlighterThemes";
+} from "../types/SyntaxHighlighterThemes";
 import React, {
   createContext,
   useContext,

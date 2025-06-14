@@ -1,12 +1,8 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { SourceViewer } from "./SourceViewer";
-import { useTheme } from "./ThemeContext";
+import { ThemeProvider } from "./ThemeContext";
 
-// Mock dependencies
-jest.mock("./ThemeContext", () => ({
-  useTheme: jest.fn(),
-}));
 jest.mock("react-syntax-highlighter/dist/esm/styles/hljs", () => ({}));
 jest.mock("../utils/getLinesStatus", () => ({
   getLinesStatus: jest.fn(() => []),
@@ -17,15 +13,19 @@ jest.mock("../utils/getBranchesStatus", () => ({
 jest.mock("../utils/replaceTextWithSpanByColumn", () => ({
   replaceTextWithSpanByColumn: jest.fn(),
 }));
+jest.mock("./TestRecommender", () => ({
+  TestRecommender: () => <div>Test Recommender</div>,
+}));
 
 // Mock fetch
 global.fetch = jest.fn();
 
 // Helper to render component
 const renderComponent = (props = {}) => {
-  (useTheme as jest.Mock).mockReturnValue({ theme: "docco" });
   return render(
-    <SourceViewer filePath="file.ts" coverage={{} as any} {...props} />
+    <ThemeProvider>
+      <SourceViewer filePath="file.ts" coverage={{} as any} {...props} />
+    </ThemeProvider>
   );
 };
 
