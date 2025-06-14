@@ -53,7 +53,7 @@ export const TestRecommender = ({
           <div className="flex flex-col">
             <button
               onClick={fetchRec}
-              className="border-1 border-black cursor-pointer"
+              className="border-1 border-black cursor-pointer h-[100px]  hover:bg-gray-300"
             >
               Suggest Tests
             </button>
@@ -84,7 +84,7 @@ export const TestRecommender = ({
           </div>
           <button
             onClick={fetchSummary}
-            className="border-1 border-black cursor-pointer"
+            className="border-1 border-black cursor-pointer  h-[100px] hover:bg-gray-300"
           >
             Summarize File
           </button>
