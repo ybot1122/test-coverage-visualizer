@@ -28,7 +28,6 @@ export const getCoverageData = () => {
   };
   const files = getAllFiles(normalizedSummary);
   const commonPrefix = getCommonPathPrefix(files);
-  console.log(commonPrefix);
   Object.keys(normalizedSummary).forEach((k) => {
     const normalizedKey = k.replace(commonPrefix, "");
     normalizedSummaryFinal[normalizedKey] = (normalizedSummary as any)[k];
