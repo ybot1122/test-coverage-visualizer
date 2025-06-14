@@ -1,6 +1,15 @@
 import { useState } from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { themeMap, useTheme } from "./ThemeContext";
 
-export const TestRecommender = ({ filePath }: { filePath: string }) => {
+export const TestRecommender = ({
+  filePath,
+  language,
+}: {
+  filePath: string;
+  language: string;
+}) => {
+  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState("");
 
@@ -28,7 +37,23 @@ export const TestRecommender = ({ filePath }: { filePath: string }) => {
           </button>
         </div>
       )}
-      <div>{response}</div>
+      <div>
+        <SyntaxHighlighter
+          language={language}
+          showLineNumbers
+          showInlineLineNumbers
+          style={themeMap[theme]}
+          lineProps={(lineNumber) => {
+            return {
+              key: lineNumber,
+              id: `line-${lineNumber}`,
+            };
+          }}
+          wrapLines
+        >
+          {response}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 };

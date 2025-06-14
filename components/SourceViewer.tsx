@@ -1,39 +1,12 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { useEffect, useState } from "react";
-import {
-  docco,
-  ascetic,
-  darcula,
-  dark,
-  github,
-  hopscotch,
-  idea,
-  nightOwl,
-  ocean,
-  sunburst,
-  vs2015,
-} from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { CoverageMap } from "../types/CoverageMap";
-import { useTheme } from "./ThemeContext";
+import { themeMap, useTheme } from "./ThemeContext";
 import { getLinesStatus } from "../utils/getLinesStatus";
 import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
 import { TestRecommender } from "./TestRecommender";
-
-const themeMap = {
-  docco,
-  ascetic,
-  darcula,
-  dark,
-  github,
-  hopscotch,
-  idea,
-  nightOwl,
-  ocean,
-  sunburst,
-  vs2015,
-} as const;
 
 const dark_bg: SyntaxHighlighterTheme[] = [
   "darcula",
@@ -113,7 +86,7 @@ export function SourceViewer({
           is a bug.
         </p>
       )}
-      <TestRecommender filePath={filePath} />
+      <TestRecommender filePath={filePath} language={language} />
       <SyntaxHighlighter
         language={language}
         showLineNumbers
