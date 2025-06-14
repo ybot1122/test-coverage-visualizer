@@ -1,4 +1,6 @@
 import { CoverageMap } from "@/types/CoverageMap";
+import { getCoverageForLine } from "@/utils/getCoverageForLine";
+import { useEffect, useState } from "react";
 
 export const LineInfo = ({
   line,
@@ -12,46 +14,49 @@ export const LineInfo = ({
   coverage: CoverageMap | undefined;
 }) => {
   if (!coverage) return null;
+  const [info, setInfo] = useState<{
+    exCount: string;
+    fnDecl: string;
+    ranges: any[];
+  }>();
 
-  let lineCount: number | undefined = undefined;
-  let isFnDecl = false;
+  useEffect(() => {
+    let lineCount: number | undefined = undefined;
+    let fnDecl = "";
 
-  Object.entries(coverage.statementMap).forEach(([id, loc]: [string, any]) => {
-    const count = coverage.s[id];
-    const lineStart = loc.start.line;
-    const lineEnd = loc.end.line ?? loc.start.line;
-    for (let i = lineStart; i <= lineEnd; i++) {
-      if (i === line && count > 0) {
-        lineCount = (lineCount ?? 0) + count;
+    const ranges = getCoverageForLine(coverage, line);
+    console.log(ranges);
+
+    Object.entries(coverage.fnMap).forEach(
+      ([id, { decl, name }]: [string, any]) => {
+        for (let i = decl.start.line; i <= decl.end.line; i++) {
+          if (i === line) {
+            fnDecl = `; ${name} declaration`;
+          }
+        }
       }
-    }
-  });
+    );
 
-  Object.entries(coverage.fnMap).forEach(([id, { decl }]: [string, any]) => {
-    for (let i = decl.start; i <= decl.end; i++) {
-      if (i === line) {
-        isFnDecl = true;
-      }
-    }
-  });
+    const exCount =
+      lineCount === undefined
+        ? ""
+        : lineCount === 0
+        ? "never executed"
+        : `executed ${lineCount}x`;
 
-  const exCount =
-    lineCount === undefined
-      ? ""
-      : lineCount === 0
-      ? "never executed"
-      : `executed ${lineCount}x`;
-  const fnDecl = isFnDecl ? "function declaration" : "";
+    setInfo({ exCount, fnDecl, ranges });
+  }, [line]);
 
   return (
     <div
       className="absolute bg-blue-300 p-2"
       style={{
-        top: y - 40,
+        top: y - 140,
         left: x + 50,
       }}
     >
-      Line {line}: {exCount} {fnDecl}
+      Line {line}: {info?.exCount}
+      {info?.fnDecl} {JSON.stringify(info?.ranges)}
     </div>
   );
 };
