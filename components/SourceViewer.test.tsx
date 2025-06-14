@@ -1,11 +1,12 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { SourceViewer } from "./SourceViewer";
-import { useTheme } from "./ThemeContext";
+import { themeMap, useTheme } from "./ThemeContext";
 
 // Mock dependencies
 jest.mock("./ThemeContext", () => ({
   useTheme: jest.fn(),
+  themeMap,
 }));
 jest.mock("react-syntax-highlighter/dist/esm/styles/hljs", () => ({}));
 jest.mock("../utils/getLinesStatus", () => ({
@@ -17,6 +18,7 @@ jest.mock("../utils/getBranchesStatus", () => ({
 jest.mock("../utils/replaceTextWithSpanByColumn", () => ({
   replaceTextWithSpanByColumn: jest.fn(),
 }));
+jest.mock("./TestRecommender", () => () => <div>Test Recommender</div>);
 
 // Mock fetch
 global.fetch = jest.fn();
