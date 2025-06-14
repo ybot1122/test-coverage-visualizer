@@ -9,6 +9,33 @@ import React, {
   useState,
   ReactNode,
 } from "react";
+import {
+  docco,
+  ascetic,
+  darcula,
+  dark,
+  github,
+  hopscotch,
+  idea,
+  nightOwl,
+  ocean,
+  sunburst,
+  vs2015,
+} from "react-syntax-highlighter/dist/esm/styles/hljs";
+
+export const themeMap = {
+  docco,
+  ascetic,
+  darcula,
+  dark,
+  github,
+  hopscotch,
+  idea,
+  nightOwl,
+  ocean,
+  sunburst,
+  vs2015,
+} as const;
 
 // Keys used in localStorage
 const LOCAL_STORAGE_KEY = "preferred_theme";

@@ -1,38 +1,12 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { useEffect, useState } from "react";
-import {
-  docco,
-  ascetic,
-  darcula,
-  dark,
-  github,
-  hopscotch,
-  idea,
-  nightOwl,
-  ocean,
-  sunburst,
-  vs2015,
-} from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { CoverageMap } from "../types/CoverageMap";
-import { useTheme } from "./ThemeContext";
+import { themeMap, useTheme } from "./ThemeContext";
 import { getLinesStatus } from "../utils/getLinesStatus";
 import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
-
-const themeMap = {
-  docco,
-  ascetic,
-  darcula,
-  dark,
-  github,
-  hopscotch,
-  idea,
-  nightOwl,
-  ocean,
-  sunburst,
-  vs2015,
-} as const;
+import { TestRecommender } from "./TestRecommender";
 
 const dark_bg: SyntaxHighlighterTheme[] = [
   "darcula",
@@ -94,7 +68,6 @@ export function SourceViewer({
   setTimeout(() => {
     for (let i = 0; i < branchesStatus.length; i++) {
       for (let j = 0; j < branchesStatus[i].length; j++) {
-        console.log(branchesStatus[i][j]);
         replaceTextWithSpanByColumn(
           `line-${i}`,
           branchesStatus[i][j].colStart,
@@ -112,26 +85,34 @@ export function SourceViewer({
           is a bug.
         </p>
       )}
-      <SyntaxHighlighter
-        language={language}
-        showLineNumbers
-        showInlineLineNumbers
-        style={themeMap[theme]}
-        lineProps={(lineNumber) => {
-          return {
-            key: lineNumber,
-            id: `line-${lineNumber}`,
-            className: `${
-              linesStatus[lineNumber] === "uncovered"
-                ? uncovered_highlighter
-                : ""
-            }`,
-          };
-        }}
-        wrapLines
-      >
-        {source}
-      </SyntaxHighlighter>
+      <div className="grid grid-cols-2">
+        <div>
+          <SyntaxHighlighter
+            language={language}
+            showLineNumbers
+            showInlineLineNumbers
+            style={themeMap[theme]}
+            lineProps={(lineNumber) => {
+              return {
+                key: lineNumber,
+                id: `line-${lineNumber}`,
+                className: `${
+                  linesStatus[lineNumber] === "uncovered"
+                    ? uncovered_highlighter
+                    : ""
+                }`,
+                onMouseEnter: (e) => console.log(e, lineNumber),
+              };
+            }}
+            wrapLines
+          >
+            {source.replace("```typescript", "")}
+          </SyntaxHighlighter>
+        </div>
+        <div className="border-l-1 border-gray-300">
+          <TestRecommender filePath={filePath} language={language} />
+        </div>
+      </div>
     </>
   );
 }
