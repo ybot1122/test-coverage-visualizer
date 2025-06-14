@@ -1,7 +1,6 @@
 import { GH_HOST, GH_OWNER, GH_REPO } from "@/github_config";
-import { PAT } from "@/pat";
 
-const GITHUB_TOKEN = process.env.PAT || PAT || "";
+const GITHUB_TOKEN = process.env.PAT || require("@/pat").PAT || "";
 
 export const getFile = async ({ path, ref }: { path: string; ref: string }) => {
   const githubApiUrl = `${GH_HOST}/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(

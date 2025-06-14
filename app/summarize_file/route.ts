@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { KEY } from "@/anthropic_api_key";
-
 import Anthropic from "@anthropic-ai/sdk";
 import { getFile } from "@/utils/getFile";
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || KEY || "";
+const ANTHROPIC_API_KEY =
+  process.env.ANTHROPIC_API_KEY || require("@/anthropic_api_key").KEY || "";
 const anthropic = new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
 });
