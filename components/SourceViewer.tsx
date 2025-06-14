@@ -2,7 +2,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { useEffect, useState } from "react";
 import { CoverageMap } from "../types/CoverageMap";
 import { themeMap, useTheme } from "./ThemeContext";
-import { getLinesStatus } from "../utils/getLinesStatus";
+import { getStatementsStatus } from "../utils/getStatementsStatus";
 import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
@@ -64,7 +64,7 @@ export function SourceViewer({
       ? "typescript"
       : "javascript";
 
-  const linesStatus = getLinesStatus(source, coverage);
+  const linesStatus = getStatementsStatus(source, coverage);
   const branchesStatus = getBranchesStatus(source, coverage);
 
   const uncovered_highlighter = dark_bg.includes(theme)
@@ -98,6 +98,7 @@ export function SourceViewer({
             x={infoCoords.x}
             y={infoCoords.y}
             coverage={coverage}
+            lineStatus={linesStatus[infoCoords.line]}
           />
         )}
         <div>
@@ -112,9 +113,7 @@ export function SourceViewer({
                 key: lineNumber,
                 id,
                 className: `${
-                  linesStatus[lineNumber] === "uncovered"
-                    ? uncovered_highlighter
-                    : ""
+                  !linesStatus[lineNumber].covered ? uncovered_highlighter : ""
                 }`,
                 onPointerEnter: (e) => {
                   document.getElementById(id)?.classList.add("hovered-line");

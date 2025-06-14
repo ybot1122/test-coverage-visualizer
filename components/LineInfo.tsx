@@ -1,5 +1,6 @@
 import { CoverageMap } from "@/types/CoverageMap";
 import { getCoverageForLine } from "@/utils/getCoverageForLine";
+import { LineStatus } from "@/utils/getStatementsStatus";
 import { useEffect, useState } from "react";
 
 export const LineInfo = ({
@@ -7,25 +8,22 @@ export const LineInfo = ({
   x,
   y,
   coverage,
+  lineStatus,
 }: {
   line: number;
   x: number;
   y: number;
   coverage: CoverageMap | undefined;
+  lineStatus: LineStatus;
 }) => {
   if (!coverage) return null;
   const [info, setInfo] = useState<{
-    exCount: string;
     fnDecl: string;
-    ranges: any[];
   }>();
 
   useEffect(() => {
     let lineCount: number | undefined = undefined;
     let fnDecl = "";
-
-    const ranges = getCoverageForLine(coverage, line);
-    console.log(ranges);
 
     Object.entries(coverage.fnMap).forEach(
       ([id, { decl, name }]: [string, any]) => {
@@ -44,8 +42,15 @@ export const LineInfo = ({
         ? "never executed"
         : `executed ${lineCount}x`;
 
-    setInfo({ exCount, fnDecl, ranges });
-  }, [line]);
+    setInfo({ fnDecl });
+  }, [line, lineStatus]);
+
+  const exCount =
+    lineStatus.count === -1
+      ? ""
+      : lineStatus.count === 0
+      ? "never executed"
+      : `executed ${lineStatus.count}x`;
 
   return (
     <div
@@ -55,8 +60,10 @@ export const LineInfo = ({
         left: x + 50,
       }}
     >
-      Line {line}: {info?.exCount}
-      {info?.fnDecl} {JSON.stringify(info?.ranges)}
+      Line {line}: {exCount}
+      {info?.fnDecl}
+      {lineStatus.range.length &&
+        JSON.stringify(lineStatus.range.filter((r) => !r.covered))}
     </div>
   );
 };

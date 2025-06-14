@@ -1,13 +1,23 @@
 import { CoverageMap } from "@/types/CoverageMap";
 import { getCoverageForLine } from "./getCoverageForLine";
 
+export type LineStatus = {
+  count: number;
+  range: any[];
+  covered: boolean;
+};
+
 // Annotates lines based on statement coverage
-export function getLinesStatus(
+export function getStatementsStatus(
   source: string,
   coverage: CoverageMap | undefined
-): ("covered" | "uncovered" | undefined)[] {
+): LineStatus[] {
   const lines = source.split("\n");
-  const status = Array(lines.length + 1).fill("covered");
+  const status = Array(lines.length + 1).fill({
+    count: -1,
+    range: [],
+    covered: true,
+  });
 
   if (!coverage) {
     return status; // No coverage data available
@@ -28,9 +38,12 @@ export function getLinesStatus(
     const lineStart = loc.start.line;
     const lineEnd = loc.end.line ?? loc.start.line;
     for (let i = lineStart; i <= lineEnd; i++) {
-      status[i] = getCoverageForLine(coverage, i).some((r) => !r.covered)
-        ? "uncovered"
-        : "covered";
+      const forLine = getCoverageForLine(coverage, i);
+      status[i] = {
+        covered: !forLine.some((r) => !r.covered),
+        count,
+        range: forLine,
+      };
     }
   });
   return status;
