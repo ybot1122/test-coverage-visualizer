@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get("path");
   const line = searchParams.get("line");
+  const framework = searchParams.get("framework");
 
   if (!path) {
     return new NextResponse("need path", { status: 400 });
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
       max_tokens: 4096,
       temperature: 1,
       stream: true,
-      system: "Respond writing valid Typescript. Do not use markdown.",
+      system: `Write tests using the framework ${framework}`,
       messages: [
         {
           role: "user",
