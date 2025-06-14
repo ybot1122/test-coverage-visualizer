@@ -19,6 +19,7 @@ import { getLinesStatus } from "../utils/getLinesStatus";
 import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
+import { TestRecommender } from "./TestRecommender";
 
 const themeMap = {
   docco,
@@ -112,6 +113,7 @@ export function SourceViewer({
           is a bug.
         </p>
       )}
+      <TestRecommender filePath={filePath} />
       <SyntaxHighlighter
         language={language}
         showLineNumbers

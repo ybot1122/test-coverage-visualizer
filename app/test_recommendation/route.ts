@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { KEY } from "@/anthropic_api_key";
 
 import Anthropic from "@anthropic-ai/sdk";
+import { getFile } from "@/utils/getFile";
 
 // Given a file, and a line number, recommend a unit test that covers the specified line.
 export async function GET(req: NextRequest) {
@@ -13,6 +14,14 @@ export async function GET(req: NextRequest) {
   const anthropic = new Anthropic({
     apiKey: ANTHROPIC_API_KEY,
   });
+
+  if (!path) {
+    return new NextResponse("need path", { status: 400 });
+  }
+
+  const data = await getFile({ path, ref: "main" });
+
+  const file = atob(data.content);
 
   try {
     const msg = await anthropic.messages.create({
@@ -26,17 +35,7 @@ export async function GET(req: NextRequest) {
           content: [
             {
               type: "text",
-              text: `
-              function getFirstPathSegment(path: string): string {
-  // Remove leading/trailing slashes
-  path = path.replace(/^\/+|\/+$/g, "");
-  // If the path is empty after trimming, return an empty string
-  if (path === "") return "";
-  // Split by '/' and return the first segment (handles single filename too)
-  const segments = path.split("/");
-  return segments[0];
-}             
-              `,
+              text: file,
             },
           ],
         },
@@ -45,7 +44,7 @@ export async function GET(req: NextRequest) {
           content: [
             {
               type: "text",
-              text: `Can you write unit tests for the function?`,
+              text: `Can you write unit tests for this file?`,
             },
           ],
         },
@@ -57,5 +56,5 @@ export async function GET(req: NextRequest) {
     console.log(e);
   }
 
-  return NextResponse.json({ error: true });
+  return NextResponse.json({ error: true }, { status: 500 });
 }

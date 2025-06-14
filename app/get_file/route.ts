@@ -1,4 +1,3 @@
-import { GH_HOST, GH_OWNER, GH_REPO } from "@/github_config";
 import { filenameRegex } from "@/utils/filenameRegex";
 import { getFile } from "@/utils/getFile";
 import { NextRequest, NextResponse } from "next/server";
