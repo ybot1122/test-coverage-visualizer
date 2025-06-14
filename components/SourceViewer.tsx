@@ -93,7 +93,12 @@ export function SourceViewer({
       )}
       <div className="grid grid-cols-2">
         {infoCoords && (
-          <LineInfo line={infoCoords.line} x={infoCoords.x} y={infoCoords.y} />
+          <LineInfo
+            line={infoCoords.line}
+            x={infoCoords.x}
+            y={infoCoords.y}
+            coverage={coverage}
+          />
         )}
         <div>
           <SyntaxHighlighter
