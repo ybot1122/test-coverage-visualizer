@@ -1,6 +1,11 @@
-import { GH_HOST, GH_OWNER, GH_REPO, PAT } from "@/pat_token";
+import { GH_HOST, GH_OWNER, GH_REPO } from "@/github_config";
 import { filenameRegex } from "@/utils/filenameRegex";
 import { NextRequest, NextResponse } from "next/server";
+
+const PAT =
+  process.env.VERCEL_ENV === "development"
+    ? require("@/github_config").PAT
+    : process.env.PAT;
 
 const getLastPathSegment = (path: string): string => {
   const lastSlashIdx = path.lastIndexOf("/");
@@ -20,7 +25,7 @@ export async function GET(req: NextRequest) {
   if (!ref || !path) {
     return NextResponse.json(
       { error: "Missing required parameters: owner, repo, path" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -28,12 +33,12 @@ export async function GET(req: NextRequest) {
   if (!filenameRegex.test(last)) {
     return NextResponse.json(
       { error: "Invalid file path format" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
-  const githubApiUrl = `${GH_HOST}/repos/${owner}/${repo}/contents/src%2F${encodeURIComponent(
-    path,
+  const githubApiUrl = `${GH_HOST}/repos/${owner}/${repo}/contents/${encodeURIComponent(
+    path
   )}${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
 
   const GITHUB_TOKEN = PAT;
@@ -45,13 +50,15 @@ export async function GET(req: NextRequest) {
         : undefined,
     });
 
+    console.log("hi");
+
     if (!githubRes.ok) {
       return NextResponse.json(
         {
           error: "Error fetching file from GitHub",
           details: await githubRes.json(),
         },
-        { status: githubRes.status },
+        { status: githubRes.status }
       );
     }
 
@@ -60,7 +67,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: "Internal server error", details: String(error) },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

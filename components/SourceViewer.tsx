@@ -98,13 +98,11 @@ export function SourceViewer({
         replaceTextWithSpanByColumn(
           `line-${i}`,
           branchesStatus[i][j].colStart,
-          branchesStatus[i][j].colEnd,
+          branchesStatus[i][j].colEnd
         );
       }
     }
   }, 500);
-
-  console.log(branchesStatus);
 
   return (
     <>
