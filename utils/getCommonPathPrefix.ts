@@ -7,6 +7,7 @@ function splitPath(filePath: string) {
 export function getCommonPathPrefix(paths: string[]): string {
   if (!paths.length) return "";
   const splitPaths = paths.map(splitPath);
+  console.log(splitPaths);
   const minLen = Math.min(...splitPaths.map((p) => p.length));
   let prefix: string[] = [];
   for (let i = 0; i < minLen; i++) {

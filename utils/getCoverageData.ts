@@ -8,28 +8,27 @@ import { getCommonPathPrefix } from "./getCommonPathPrefix";
 export const getCoverageData = () => {
   // Normalize coverage reports
   const normalizedSummary: CoverageJSON = {
-    // @ts-expect-error
     total: { ...summary["total"] },
   };
   Object.keys(summary).forEach((k) => {
-    const normalizedKey = k.replace("\\", "/");
+    const normalizedKey = k.replace(/\\/g, "/");
     normalizedSummary[normalizedKey] = (summary as any)[k];
   });
 
   // Normalize coverage reports
   const normalizedMap: Record<string, CoverageMap> = {};
   Object.keys(coverageMap).forEach((k) => {
-    const normalizedKey = k.replace("\\", "/");
+    const normalizedKey = k.replace(/\\/g, "/");
     normalizedMap[normalizedKey] = (coverageMap as any)[k];
   });
 
   // Remove common prefix
   const normalizedSummaryFinal: CoverageJSON = {
-    // @ts-expect-error
     total: { ...summary["total"] },
   };
-  const files = getAllFiles(summary);
+  const files = getAllFiles(normalizedSummary);
   const commonPrefix = getCommonPathPrefix(files);
+  console.log(commonPrefix);
   Object.keys(normalizedSummary).forEach((k) => {
     const normalizedKey = k.replace(commonPrefix, "");
     normalizedSummaryFinal[normalizedKey] = (normalizedSummary as any)[k];

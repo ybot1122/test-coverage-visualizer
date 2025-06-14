@@ -6,6 +6,7 @@ const tsJestTransformCfg = createDefaultPreset().transform;
 module.exports = {
   testEnvironment: "jsdom",
   coverageReporters: ["json", "json-summary"],
+  collectCoverageFrom: ["app/**", "components/**", "utils/**"],
   transform: {
     ...tsJestTransformCfg,
   },
