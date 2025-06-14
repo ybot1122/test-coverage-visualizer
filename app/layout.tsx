@@ -4,6 +4,7 @@ import "./globals.css";
 import CoverageDataContextProvider from "@/components/CoverageDataContext";
 import { CoverageJSON } from "@/types/CoverageSummary";
 import { CoverageMap } from "@/types/CoverageMap";
+import { getCoverageData } from "@/utils/getCoverageData";
 
 const font = Cousine({
   weight: "400",
@@ -21,9 +22,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const data = await fetch("http://localhost:3000/api/coverage-report");
-  const json = await data.json();
-  const { summary, coverage } = json;
+  const data = getCoverageData();
+  const { summary, coverage } = data;
 
   return (
     <html lang="en">
