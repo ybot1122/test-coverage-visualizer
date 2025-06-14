@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PAT =
   process.env.VERCEL_ENV === "development"
-    ? require("@/github_config").PAT
+    ? require("@/pat").PAT
     : process.env.PAT;
 
 const getLastPathSegment = (path: string): string => {
