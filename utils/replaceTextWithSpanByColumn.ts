@@ -1,14 +1,13 @@
 export function replaceTextWithSpanByColumn(
   elementId: string,
   colStart: number,
-  colEnd: number,
+  colEnd: number
 ) {
   const el = document.getElementById(elementId);
   if (!el) return;
 
   // Get the whole text content
   const text = el.textContent;
-  console.log(text);
 
   if (!text) {
     return;

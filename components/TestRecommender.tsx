@@ -1,6 +1,5 @@
 import { useState } from "react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { themeMap, useTheme } from "./ThemeContext";
+import Markdown from "react-markdown";
 
 export const TestRecommender = ({
   filePath,
@@ -9,20 +8,43 @@ export const TestRecommender = ({
   filePath: string;
   language: string;
 }) => {
-  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState("");
 
   const fetchRec = async () => {
     setIsLoading(true);
-    const res = await fetch(`/test_recommendation?path=${filePath}&ref=main`);
-    const data = await res.json();
+    setResponse("");
+    const response = await fetch(
+      `/test_recommendation?path=${filePath}&ref=main`
+    );
 
-    if (data.msg && data.msg.content.length > 0) {
-      setResponse(data.msg.content[0].text);
-    } else {
-      setResponse("something went wrong");
+    if (!response.body) {
+      setResponse("Error failed to make call");
+      return;
     }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let done = false;
+    let accumulated = "";
+
+    while (!done) {
+      const { value, done: streamDone } = await reader.read();
+      done = streamDone;
+      if (value) {
+        const chunk = decoder.decode(value, { stream: true });
+        console.log(chunk);
+        accumulated += chunk;
+
+        if (accumulated.startsWith("```typescript")) {
+          accumulated.replace("```typescript", "");
+        }
+
+        setResponse(accumulated);
+      }
+    }
+
     setIsLoading(false);
   };
 
@@ -38,21 +60,7 @@ export const TestRecommender = ({
         </div>
       )}
       <div>
-        <SyntaxHighlighter
-          language={language}
-          showLineNumbers
-          showInlineLineNumbers
-          style={themeMap[theme]}
-          lineProps={(lineNumber) => {
-            return {
-              key: lineNumber,
-              id: `line-${lineNumber}`,
-            };
-          }}
-          wrapLines
-        >
-          {response}
-        </SyntaxHighlighter>
+        <Markdown>{response}</Markdown>
       </div>
     </div>
   );

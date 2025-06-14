@@ -68,7 +68,6 @@ export function SourceViewer({
   setTimeout(() => {
     for (let i = 0; i < branchesStatus.length; i++) {
       for (let j = 0; j < branchesStatus[i].length; j++) {
-        console.log(branchesStatus[i][j]);
         replaceTextWithSpanByColumn(
           `line-${i}`,
           branchesStatus[i][j].colStart,
@@ -86,27 +85,33 @@ export function SourceViewer({
           is a bug.
         </p>
       )}
-      <TestRecommender filePath={filePath} language={language} />
-      <SyntaxHighlighter
-        language={language}
-        showLineNumbers
-        showInlineLineNumbers
-        style={themeMap[theme]}
-        lineProps={(lineNumber) => {
-          return {
-            key: lineNumber,
-            id: `line-${lineNumber}`,
-            className: `${
-              linesStatus[lineNumber] === "uncovered"
-                ? uncovered_highlighter
-                : ""
-            }`,
-          };
-        }}
-        wrapLines
-      >
-        {source}
-      </SyntaxHighlighter>
+      <div className="grid grid-cols-2">
+        <div>
+          <SyntaxHighlighter
+            language={language}
+            showLineNumbers
+            showInlineLineNumbers
+            style={themeMap[theme]}
+            lineProps={(lineNumber) => {
+              return {
+                key: lineNumber,
+                id: `line-${lineNumber}`,
+                className: `${
+                  linesStatus[lineNumber] === "uncovered"
+                    ? uncovered_highlighter
+                    : ""
+                }`,
+              };
+            }}
+            wrapLines
+          >
+            {source.replace("```typescript", "")}
+          </SyntaxHighlighter>
+        </div>
+        <div className="border-l-1 border-gray-300">
+          <TestRecommender filePath={filePath} language={language} />
+        </div>
+      </div>
     </>
   );
 }
