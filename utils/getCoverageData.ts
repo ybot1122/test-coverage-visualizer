@@ -1,5 +1,5 @@
-import summary from "../public/coverage-summary.json";
-import coverageMap from "../public/coverage-final.json";
+import summary from "../coverage/coverage-summary.json";
+import coverageMap from "../coverage/coverage-final.json";
 import { CoverageJSON } from "@/types/CoverageSummary";
 import { CoverageMap } from "@/types/CoverageMap";
 import { getAllFiles } from "./getAllFiles";

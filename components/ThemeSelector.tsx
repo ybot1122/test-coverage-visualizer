@@ -1,4 +1,3 @@
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useTheme } from "./ThemeContext";
 import { syntaxHighlighterThemes } from "@/types/SyntaxHighlighterThemes";
 
