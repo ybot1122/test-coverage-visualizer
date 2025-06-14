@@ -101,6 +101,7 @@ export function SourceViewer({
                     ? uncovered_highlighter
                     : ""
                 }`,
+                onMouseEnter: (e) => console.log(e, lineNumber),
               };
             }}
             wrapLines

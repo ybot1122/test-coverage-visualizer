@@ -2,6 +2,7 @@ import { useState } from "react";
 import Markdown from "react-markdown";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { themeMap, useTheme } from "./ThemeContext";
+import { fetchStream } from "@/utils/fetchStream";
 
 export const TestRecommender = ({
   filePath,
@@ -17,52 +18,34 @@ export const TestRecommender = ({
   const fetchRec = async () => {
     setIsLoading(true);
     setResponse("");
-    const response = await fetch(
-      `/test_recommendation?path=${filePath}&ref=main`
-    );
-
-    if (!response.body) {
-      setResponse("Error failed to make call");
-      return;
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    let done = false;
-    let accumulated = "";
-
-    while (!done) {
-      const { value, done: streamDone } = await reader.read();
-      done = streamDone;
-      if (value) {
-        const chunk = decoder.decode(value, { stream: true });
-        console.log(chunk);
-        accumulated += chunk;
-
-        if (accumulated.startsWith("```typescript")) {
-          accumulated.replace("```typescript", "");
-        }
-
-        setResponse(accumulated);
-      }
-    }
-
+    await fetchStream({
+      url: `/test_recommendation?path=${filePath}&ref=main`,
+      onRead: setResponse,
+    });
     setIsLoading(false);
   };
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-col p-2">
       {isLoading ? (
-        "generating tests..."
+        "responding..."
       ) : (
-        <div>
-          <button onClick={fetchRec} className="border-1 border-black">
+        <div className="grid gap-2 grid-cols-3">
+          <button
+            onClick={fetchRec}
+            className="border-1 border-black cursor-pointer"
+          >
             Suggest Tests
+          </button>
+          <button
+            onClick={fetchRec}
+            className="border-1 border-black cursor-pointer"
+          >
+            Summarize File
           </button>
         </div>
       )}
-      <div>
+      <div className="border-1 border-gray-300 m-5 p-5">
         <Markdown
           components={{
             code(props) {
