@@ -4,8 +4,8 @@ import { SourceViewer } from "./SourceViewer";
 import { ThemeProvider } from "./ThemeContext";
 
 jest.mock("react-syntax-highlighter/dist/esm/styles/hljs", () => ({}));
-jest.mock("../utils/getLinesStatus", () => ({
-  getLinesStatus: jest.fn(() => []),
+jest.mock("../utils/getStatementsStatus", () => ({
+  getStatementsStatus: jest.fn(() => [{}, { covered: true }]),
 }));
 jest.mock("../utils/getBranchesStatus", () => ({
   getBranchesStatus: jest.fn(() => []),

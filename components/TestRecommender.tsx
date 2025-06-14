@@ -45,7 +45,7 @@ export const TestRecommender = ({
   };
 
   return (
-    <div className="flex flex-col p-2">
+    <div className="flex flex-col p-2 sticky t-[20px]">
       {isLoading ? (
         "responding..."
       ) : (
