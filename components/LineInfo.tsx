@@ -54,16 +54,11 @@ export const LineInfo = ({
 
   return (
     <div
-      className="absolute bg-blue-300 p-2"
-      style={{
-        top: y - 140,
-        left: x + 50,
-      }}
+      className="fixed top-0 left-0 bg-blue-300 p-2 w-full h-[40px]"
+      style={{}}
     >
       Line {line}: {exCount}
-      {info?.fnDecl}
-      {lineStatus.range.length &&
-        JSON.stringify(lineStatus.range.filter((r) => !r.covered))}
+      {info?.fnDecl} Click for more options.
     </div>
   );
 };

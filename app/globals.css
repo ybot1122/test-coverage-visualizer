@@ -34,4 +34,5 @@ a {
 
 .hovered-line {
   background: lightblue;
+  cursor: pointer;
 }
