@@ -1,11 +1,7 @@
 import { GH_HOST, GH_OWNER, GH_REPO } from "@/github_config";
 import { filenameRegex } from "@/utils/filenameRegex";
+import { getFile } from "@/utils/getFile";
 import { NextRequest, NextResponse } from "next/server";
-
-const PAT =
-  process.env.VERCEL_ENV === "development"
-    ? require("@/pat").PAT
-    : process.env.PAT;
 
 const getLastPathSegment = (path: string): string => {
   const lastSlashIdx = path.lastIndexOf("/");
@@ -15,8 +11,6 @@ const getLastPathSegment = (path: string): string => {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const owner = GH_OWNER;
-  const repo = GH_REPO;
   const encodedPath = searchParams.get("path");
   const ref = searchParams.get("ref");
 
@@ -37,36 +31,15 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const githubApiUrl = `${GH_HOST}/repos/${owner}/${repo}/contents/${encodeURIComponent(
-    path
-  )}${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
-
-  const GITHUB_TOKEN = PAT;
-
   try {
-    const githubRes = await fetch(githubApiUrl, {
-      headers: GITHUB_TOKEN
-        ? { Authorization: `token ${GITHUB_TOKEN}` }
-        : undefined,
-    });
-
-    console.log("hi");
-
-    if (!githubRes.ok) {
-      return NextResponse.json(
-        {
-          error: "Error fetching file from GitHub",
-          details: await githubRes.json(),
-        },
-        { status: githubRes.status }
-      );
-    }
-
-    const data = await githubRes.json();
+    const data = await getFile({ path, ref });
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (e) {
     return NextResponse.json(
-      { error: "Internal server error", details: String(error) },
+      {
+        error: "Error fetching file from GitHub",
+        details: e,
+      },
       { status: 500 }
     );
   }
