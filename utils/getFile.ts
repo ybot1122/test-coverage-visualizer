@@ -1,18 +1,12 @@
 import { GH_HOST, GH_OWNER, GH_REPO } from "@/github_config";
-import { filenameRegex } from "@/utils/filenameRegex";
-import { NextRequest, NextResponse } from "next/server";
+import { PAT } from "@/pat";
 
-const PAT =
-  process.env.VERCEL_ENV === "development"
-    ? require("@/pat").PAT
-    : process.env.PAT;
+const GITHUB_TOKEN = process.env.PAT || PAT || "";
 
 export const getFile = async ({ path, ref }: { path: string; ref: string }) => {
   const githubApiUrl = `${GH_HOST}/repos/${GH_OWNER}/${GH_REPO}/contents/${encodeURIComponent(
     path
   )}${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
-
-  const GITHUB_TOKEN = PAT;
 
   const githubRes = await fetch(githubApiUrl, {
     headers: GITHUB_TOKEN
