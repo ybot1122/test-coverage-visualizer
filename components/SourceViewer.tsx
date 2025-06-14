@@ -13,12 +13,12 @@ import {
   sunburst,
   vs2015,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { CoverageMap } from "@/types/CoverageMap";
+import { CoverageMap } from "../types/CoverageMap";
 import { useTheme } from "./ThemeContext";
-import { getLinesStatus } from "@/utils/getLinesStatus";
-import { SyntaxHighlighterTheme } from "@/types/SyntaxHighlighterThemes";
-import { getBranchesStatus } from "@/utils/getBranchesStatus";
-import { replaceTextWithSpanByColumn } from "@/utils/replaceTextWithSpanByColumn";
+import { getLinesStatus } from "../utils/getLinesStatus";
+import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
+import { getBranchesStatus } from "../utils/getBranchesStatus";
+import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
 
 const themeMap = {
   docco,
