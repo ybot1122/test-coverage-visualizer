@@ -93,15 +93,22 @@ export function SourceViewer({
             showInlineLineNumbers
             style={themeMap[theme]}
             lineProps={(lineNumber) => {
+              const id = `line-${lineNumber}`;
               return {
                 key: lineNumber,
-                id: `line-${lineNumber}`,
+                id,
                 className: `${
                   linesStatus[lineNumber] === "uncovered"
                     ? uncovered_highlighter
                     : ""
                 }`,
-                onMouseEnter: (e) => console.log(e, lineNumber),
+                onPointerEnter: (e) => {
+                  document.getElementById(id)?.classList.add("hovered-line");
+                  console.log(e, lineNumber);
+                },
+                onPointerLeave: (e) => {
+                  document.getElementById(id)?.classList.remove("hovered-line");
+                },
               };
             }}
             wrapLines
