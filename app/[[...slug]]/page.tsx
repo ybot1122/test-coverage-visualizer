@@ -14,6 +14,7 @@ import { useCoverageData } from "@/components/CoverageDataContext";
 import { filepathToLinks } from "@/utils/filepathToLinks";
 import { buildFileKey } from "@/utils/buildFileKey";
 import { PageStatItem } from "@/components/PageStatItem";
+import { LineContextProvider } from "@/components/LineContext";
 
 export default function Page() {
   const params = useParams();
@@ -49,77 +50,79 @@ export default function Page() {
 
   return (
     <ThemeProvider>
-      <div className="grid min-h-screen p-8 gap-16 w-full">
-        <main className="w-full">
-          <div className="flex items-center justify-between mb-5">
-            <h1 className="text-xl">Test Coverage Report</h1>
-            {isFile && (
-              <div className="ml-auto">
-                <ThemeSelector />
-              </div>
-            )}
-          </div>
-          <div className="mb-5">
-            <div>
-              {" "}
-              <Link
-                href={`/`}
-                className="text-blue-700 underline bg-none border-none cursor-pointer p-0 mx-1"
-              >
-                root
-              </Link>
-              <span className="mx-1">/</span>
-              {filepathToLinks(path)}
+      <LineContextProvider>
+        <div className="grid min-h-screen p-8 gap-16 w-full">
+          <main className="w-full">
+            <div className="flex items-center justify-between mb-5">
+              <h1 className="text-xl">Test Coverage Report</h1>
+              {isFile && (
+                <div className="ml-auto">
+                  <ThemeSelector />
+                </div>
+              )}
             </div>
-          </div>
+            <div className="mb-5">
+              <div>
+                {" "}
+                <Link
+                  href={`/`}
+                  className="text-blue-700 underline bg-none border-none cursor-pointer p-0 mx-1"
+                >
+                  root
+                </Link>
+                <span className="mx-1">/</span>
+                {filepathToLinks(path)}
+              </div>
+            </div>
 
-          <div className="grid grid-cols-4 gap-4 mb-5 w-full text-sm">
-            <PageStatItem
-              pct={statements.pct}
-              stat="Statements"
-              covered={statements.covered}
-              total={statements.total}
-            />
-            <PageStatItem
-              pct={branches.pct}
-              stat="Branches"
-              covered={branches.covered}
-              total={branches.total}
-            />
-            <PageStatItem
-              pct={functions.pct}
-              stat="Functions"
-              covered={functions.covered}
-              total={functions.total}
-            />
-            <PageStatItem
-              pct={lines.pct}
-              stat="Lines"
-              covered={lines.covered}
-              total={lines.total}
-            />
-          </div>
-          {!isFile && (
-            <FileTable
-              entries={trimmedFiles}
-              coverageSummary={summary}
-              coverageByDirectory={coverageByDirectory}
-              path={path}
-            />
-          )}
+            <div className="grid grid-cols-4 gap-4 mb-5 w-full text-sm">
+              <PageStatItem
+                pct={statements.pct}
+                stat="Statements"
+                covered={statements.covered}
+                total={statements.total}
+              />
+              <PageStatItem
+                pct={branches.pct}
+                stat="Branches"
+                covered={branches.covered}
+                total={branches.total}
+              />
+              <PageStatItem
+                pct={functions.pct}
+                stat="Functions"
+                covered={functions.covered}
+                total={functions.total}
+              />
+              <PageStatItem
+                pct={lines.pct}
+                stat="Lines"
+                covered={lines.covered}
+                total={lines.total}
+              />
+            </div>
+            {!isFile && (
+              <FileTable
+                entries={trimmedFiles}
+                coverageSummary={summary}
+                coverageByDirectory={coverageByDirectory}
+                path={path}
+              />
+            )}
 
-          {isFile && (
-            <SourceViewer
-              filePath={path}
-              coverage={
-                fileKey
-                  ? coverageMap[fileKey as keyof typeof coverageMap]
-                  : undefined
-              }
-            />
-          )}
-        </main>
-      </div>
+            {isFile && (
+              <SourceViewer
+                filePath={path}
+                coverage={
+                  fileKey
+                    ? coverageMap[fileKey as keyof typeof coverageMap]
+                    : undefined
+                }
+              />
+            )}
+          </main>
+        </div>
+      </LineContextProvider>
     </ThemeProvider>
   );
 }

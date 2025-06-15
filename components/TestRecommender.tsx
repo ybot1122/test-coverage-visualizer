@@ -4,6 +4,18 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { themeMap, useTheme } from "./ThemeContext";
 import { fetchStream } from "@/utils/fetchStream";
 import { Outfit } from "next/font/google";
+import { LineInfo } from "./LineInfo";
+import { useLineInfo } from "./LineContext";
+import { useCoverageData } from "./CoverageDataContext";
+import Loader from "./Loader";
+
+const loaderCopy = {
+  summarize_file: "Generating summary of this file...",
+  test_file: "Generating tests for this file...",
+  summarize_line: "Explaining the coverage for this line",
+  test_line: "Generating test to cover this line",
+};
+
 const font = Outfit({
   weight: "400",
   subsets: ["latin"],
@@ -20,12 +32,19 @@ export const TestRecommender = ({
   const [response, setResponse] = useState("");
   const [testFramework, setTestFramework] = useState("jest");
   const { theme } = useTheme();
+  const { lineInfo, setLineInfo } = useLineInfo();
+  const [currAction, setCurrAction] = useState<
+    "summarize_file" | "test_file" | "summarize_line" | "test_line"
+  >();
+  const { coverageMap } = useCoverageData();
+
   const updateTestFramework = (event: any) => {
     setTestFramework(event.target.value);
   };
 
   const fetchRec = async () => {
     setIsLoading(true);
+    setCurrAction("test_file");
     setResponse("");
     await fetchStream({
       url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}`,
@@ -36,6 +55,7 @@ export const TestRecommender = ({
 
   const fetchSummary = async () => {
     setIsLoading(true);
+    setCurrAction("summarize_file");
     setResponse("");
     await fetchStream({
       url: `/summarize_file?path=${filePath}&ref=main`,
@@ -44,12 +64,25 @@ export const TestRecommender = ({
     setIsLoading(false);
   };
 
+  const fetchLineExplanation = async () => {
+    setIsLoading(true);
+    setCurrAction("summarize_line");
+  };
+
+  const fetchTestForLine = async () => {
+    setIsLoading(true);
+    setCurrAction("test_line");
+  };
+
   return (
-    <div className="flex flex-col p-2 sticky t-[20px]">
-      {isLoading ? (
-        "responding..."
-      ) : (
-        <div className="grid gap-2 grid-cols-3">
+    <div className="flex flex-col p-2 t-[20px]">
+      <LineInfo filePath={filePath} />
+      {isLoading && currAction ? (
+        <div className="text-center">
+          {loaderCopy[currAction]} <Loader />
+        </div>
+      ) : !lineInfo ? (
+        <div className="grid gap-2 grid-cols-2">
           <div className="flex flex-col">
             <button
               onClick={fetchRec}
@@ -89,8 +122,27 @@ export const TestRecommender = ({
             Summarize File
           </button>
         </div>
+      ) : (
+        <div className="grid gap-2 grid-cols-2 mt-2">
+          <button
+            onClick={fetchRec}
+            className="border-1 border-black cursor-pointer h-[100px]  hover:bg-gray-300"
+          >
+            Explain Coverage for this Line
+          </button>
+          <button
+            onClick={fetchSummary}
+            className="border-1 border-black cursor-pointer  h-[100px] hover:bg-gray-300"
+          >
+            Generate Test For this Line
+          </button>
+        </div>
       )}
-      <div className={`border-1 border-gray-300 m-5 p-5 ${font.className}`}>
+      <div
+        className={`${
+          response ? "border-1" : ""
+        } border-gray-300 mt-5 p-5 *:mb-2 ${font.className} markdown`}
+      >
         <Markdown
           components={{
             code(props) {
@@ -102,6 +154,8 @@ export const TestRecommender = ({
                   children={String(children).replace(/\n$/, "")}
                   language={match[1]}
                   style={themeMap[theme]}
+                  wrapLongLines
+                  wrapLines
                 />
               ) : (
                 <code {...rest} className={className}>

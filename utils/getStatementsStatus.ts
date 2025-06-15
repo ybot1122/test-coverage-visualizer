@@ -5,6 +5,7 @@ export type LineStatus = {
   count: number;
   range: any[];
   covered: boolean;
+  line: number;
 };
 
 // Annotates lines based on statement coverage
@@ -43,6 +44,7 @@ export function getStatementsStatus(
         covered: !forLine.some((r) => !r.covered),
         count,
         range: forLine,
+        line: i,
       };
     }
   });
