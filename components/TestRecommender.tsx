@@ -78,7 +78,7 @@ export const TestRecommender = ({
     <div className="flex flex-col p-2 t-[20px]">
       <LineInfo filePath={filePath} />
       {isLoading && currAction ? (
-        <div>
+        <div className="text-center">
           {loaderCopy[currAction]} <Loader />
         </div>
       ) : !lineInfo ? (

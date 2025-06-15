@@ -1,6 +1,12 @@
 export default function () {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      height={100}
+      width={100}
+      className="inline"
+    >
       <rect
         fill="#FF156D"
         stroke="#FF156D"
