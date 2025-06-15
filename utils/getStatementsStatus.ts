@@ -7,7 +7,11 @@ export type LineStatus = {
   covered: boolean;
   line: number;
   fnDecl?: string;
+  branchType?: string;
   raw?: string;
+  statementIds: string[];
+  branchIds: string[];
+  fnIds: string[];
 };
 
 // Annotates lines based on statement coverage
@@ -16,11 +20,7 @@ export function getStatementsStatus(
   coverage: CoverageMap | undefined
 ): LineStatus[] {
   const lines = source.split("\n");
-  const status = Array(lines.length + 1).fill({
-    count: -1,
-    range: [],
-    covered: true,
-  });
+  const status = Array(lines.length + 1);
 
   if (!coverage) {
     return status; // No coverage data available
@@ -28,21 +28,19 @@ export function getStatementsStatus(
 
   for (let i = 0; i < status.length; i++) {
     const content = document.getElementById(`line-${i}`)?.textContent;
-    status[i].line = i;
+    status[i] = {
+      count: -1,
+      range: [],
+      covered: true,
+      line: i,
+      statementIds: [],
+      branchIds: [],
+      fnIds: [],
+    };
     if (content) {
-      status[i].raw = content;
+      status[i].raw = content.replace(/^\d+/, "");
     }
   }
-
-  Object.entries(coverage.s).forEach(([id, count]: [string, number]) => {
-    if (count === 0) {
-      const lineStart = coverage.statementMap[id].start.line;
-      const lineEnd = coverage.statementMap[id].end.line;
-      for (let i = lineStart; i <= lineEnd; i++) {
-        status[i] = "uncovered";
-      }
-    }
-  });
 
   Object.entries(coverage.statementMap).forEach(([id, loc]: [string, any]) => {
     const count = coverage.s[id];
@@ -53,6 +51,7 @@ export function getStatementsStatus(
       status[i].covered = !forLine.some((r) => !r.covered);
       status[i].count = count;
       status[i].range = forLine;
+      status[i].statementIds.push(id);
     }
   });
 
@@ -61,6 +60,18 @@ export function getStatementsStatus(
       const fnDecl = `${name} declaration`;
       for (let i = decl.start.line; i <= decl.end.line; i++) {
         status[i].fnDecl = fnDecl;
+      }
+    }
+  );
+
+  Object.entries(coverage.branchMap).forEach(
+    ([id, { loc, type, locations }]: [string, any]) => {
+      const branchType = `${type} expression with ${locations.length} branch${
+        locations.length > 1 ? "es" : ""
+      }`;
+      for (let i = loc.start.line; i <= loc.end.line; i++) {
+        status[i].branchType = branchType;
+        status[i].branchIds.push(id);
       }
     }
   );

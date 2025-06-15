@@ -54,16 +54,17 @@ export const LineInfo = ({ filePath }: { filePath: string }) => {
         </div>
       </div>
       {lineInfo?.fnDecl && <div className="p-2">{lineInfo.fnDecl}</div>}
+      {lineInfo?.branchType && <div className="p-2">{lineInfo.branchType}</div>}
       {lineInfo.raw && (
-        <SyntaxHighlighter
-          language={"typescript"}
-          showLineNumbers
-          showInlineLineNumbers
-          style={themeMap[theme]}
-          wrapLines
-        >
-          {lineInfo.raw}
-        </SyntaxHighlighter>
+        <div className="p-2">
+          <SyntaxHighlighter
+            language={"typescript"}
+            style={themeMap[theme]}
+            wrapLines
+          >
+            {lineInfo.raw}
+          </SyntaxHighlighter>
+        </div>
       )}
     </div>
   );

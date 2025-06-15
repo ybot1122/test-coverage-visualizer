@@ -7,7 +7,6 @@ import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
 import { TestRecommender } from "./TestRecommender";
-import { LineInfo } from "./LineInfo";
 import { useLineInfo } from "./LineContext";
 
 const dark_bg: SyntaxHighlighterTheme[] = [
@@ -113,7 +112,6 @@ export function SourceViewer({
                 document.getElementById(id)?.classList.remove("hovered-line");
               },
               onClick: (e) => {
-                console.log(linesStatus);
                 setLineInfo(linesStatus[lineNumber]);
               },
             };
