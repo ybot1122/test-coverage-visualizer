@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   try {
     const stream = await anthropic.messages.create({
       model: "claude-opus-4-20250514",
-      max_tokens: 1024,
+      max_tokens: 500,
       temperature: 1,
       stream: true,
       system:
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
           content: [
             {
               type: "text",
-              text: `Given the source code and test coverage report, what can you tell me about line ${line}?`,
+              text: `Given the source code and test coverage report, what can you tell me about line ${line}? Consider statement, branch, and function maps.`,
             },
           ],
         },

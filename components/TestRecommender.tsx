@@ -91,6 +91,7 @@ export const TestRecommender = ({
   const fetchLineExplanation = async () => {
     setIsLoading(true);
     setCurrAction("summarize_line");
+    setResponse("");
     await fetchStream({
       url: `/summarize_line?path=${filePath}&ref=main&line=${
         lineInfo?.line
