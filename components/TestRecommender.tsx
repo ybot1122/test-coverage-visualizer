@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { themeMap, useTheme } from "./ThemeContext";
@@ -37,7 +37,13 @@ export const TestRecommender = ({
   const [currAction, setCurrAction] = useState<
     "summarize_file" | "test_file" | "summarize_line" | "test_line"
   >();
-  const { coverageMap } = useCoverageData();
+  const controller = useRef<AbortController>(undefined);
+
+  useEffect(() => {
+    console.log(controller);
+    setResponse("");
+    controller.current?.abort();
+  }, [lineInfo?.line]);
 
   const updateTestFramework = (event: any) => {
     setTestFramework(event.target.value);
@@ -47,7 +53,7 @@ export const TestRecommender = ({
     setIsLoading(true);
     setCurrAction("test_file");
     setResponse("");
-    await fetchStream({
+    controller.current = await fetchStream({
       url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}${
         lineInfo?.line ? `&line=${lineInfo.line}` : ""
       }`,
@@ -60,7 +66,7 @@ export const TestRecommender = ({
     setIsLoading(true);
     setCurrAction("summarize_file");
     setResponse("");
-    await fetchStream({
+    controller.current = await fetchStream({
       url: `/summarize_file?path=${filePath}&ref=main`,
       onRead: setResponse,
     });
@@ -99,7 +105,7 @@ export const TestRecommender = ({
             Summarize File
           </button>
         </div>
-      ) : (
+      ) : lineInfo.count > -1 ? (
         <div className="grid gap-2 grid-cols-2 mt-2">
           <SuggestTestsButton
             onClick={fetchRec}
@@ -114,7 +120,7 @@ export const TestRecommender = ({
             Explain Coverage for this Line
           </button>
         </div>
-      )}
+      ) : null}
       <div
         className={`${
           response ? "border-1" : ""

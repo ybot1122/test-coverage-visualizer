@@ -22,8 +22,6 @@ export async function GET(req: NextRequest) {
 
   const file = atob(data.content);
 
-  console.log(file);
-
   const prompt = `Can you write unit tests that cover ${
     line ? `line ${line}` : "this file"
   }?`;
@@ -32,8 +30,6 @@ export async function GET(req: NextRequest) {
     ? " Only write test for specific line, not the whole file. Line numbers are 1-based, not 0-based."
     : "";
 
-  console.log(prompt);
-  /*
   try {
     const stream = await anthropic.messages.create({
       model: "claude-opus-4-20250514",
@@ -86,7 +82,6 @@ export async function GET(req: NextRequest) {
   } catch (e) {
     console.log(e);
   }
-    */
 
   return NextResponse.json({ error: true }, { status: 500 });
 }

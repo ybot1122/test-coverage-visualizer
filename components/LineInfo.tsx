@@ -38,6 +38,10 @@ export const LineInfo = ({ filePath }: { filePath: string }) => {
   }
 
   const exCount = lineInfo.count === -1 ? "" : `executed ${lineInfo.count}x`;
+  const content = document
+    .getElementById(`line-${lineInfo.line}`)
+    ?.textContent?.replace(/^\d+/, "")
+    .trim();
 
   return (
     <div className="bg-blue-300 z-3000 w-full">
@@ -55,14 +59,15 @@ export const LineInfo = ({ filePath }: { filePath: string }) => {
       </div>
       {lineInfo?.fnDecl && <div className="p-2">{lineInfo.fnDecl}</div>}
       {lineInfo?.branchType && <div className="p-2">{lineInfo.branchType}</div>}
-      {lineInfo.raw && (
+      {content && (
         <div className="p-2">
           <SyntaxHighlighter
             language={"typescript"}
             style={themeMap[theme]}
             wrapLines
+            wrapLongLines
           >
-            {lineInfo.raw}
+            {content}
           </SyntaxHighlighter>
         </div>
       )}

@@ -8,7 +8,6 @@ export type LineStatus = {
   line: number;
   fnDecl?: string;
   branchType?: string;
-  raw?: string;
   statementIds: string[];
   branchIds: string[];
   fnIds: string[];
@@ -20,14 +19,13 @@ export function getStatementsStatus(
   coverage: CoverageMap | undefined
 ): LineStatus[] {
   const lines = source.split("\n");
-  const status = Array(lines.length + 1);
+  const status: LineStatus[] = Array(lines.length + 1);
 
   if (!coverage) {
     return status; // No coverage data available
   }
 
   for (let i = 0; i < status.length; i++) {
-    const content = document.getElementById(`line-${i}`)?.textContent;
     status[i] = {
       count: -1,
       range: [],
@@ -37,9 +35,6 @@ export function getStatementsStatus(
       branchIds: [],
       fnIds: [],
     };
-    if (content) {
-      status[i].raw = content.replace(/^\d+/, "");
-    }
   }
 
   Object.entries(coverage.statementMap).forEach(([id, loc]: [string, any]) => {

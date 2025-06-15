@@ -5,7 +5,9 @@ export const fetchStream = async ({
   url: string;
   onRead: (s: string) => void;
 }) => {
-  const response = await fetch(url);
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const response = await fetch(url, { signal });
 
   if (!response.body) {
     onRead("Error failed to make call");
@@ -28,4 +30,6 @@ export const fetchStream = async ({
       onRead(accumulated);
     }
   }
+
+  return controller;
 };
