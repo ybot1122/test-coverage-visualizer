@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext, useState } from "react";
 // Set up context shape
 interface LineInfoProps {
   lineInfo: LineStatus | undefined;
-  setLineInfo: (lineInfo: LineStatus) => void;
+  setLineInfo: (lineInfo: LineStatus | undefined) => void;
 }
 
 // Create context with default values (will be overridden by provider)
@@ -17,7 +17,7 @@ const LineContext = createContext<LineInfoProps>({
 export const LineContextProvider = ({ children }: { children: ReactNode }) => {
   const [info, setInfo] = useState<LineStatus>();
 
-  const setLineInfo = (status: LineStatus) => {
+  const setLineInfo = (status: LineStatus | undefined) => {
     setInfo(status);
   };
 

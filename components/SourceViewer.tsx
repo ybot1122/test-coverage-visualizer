@@ -8,6 +8,7 @@ import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
 import { TestRecommender } from "./TestRecommender";
 import { LineInfo } from "./LineInfo";
+import { useLineInfo } from "./LineContext";
 
 const dark_bg: SyntaxHighlighterTheme[] = [
   "darcula",
@@ -31,12 +32,8 @@ export function SourceViewer({
 }) {
   const [source, setSource] = useState("");
   const [error, setError] = useState<string>();
-  const [infoCoords, setInfoCoords] = useState<{
-    x: number;
-    y: number;
-    line: number;
-  }>();
   const { theme } = useTheme();
+  const { setLineInfo } = useLineInfo();
 
   useEffect(() => {
     fetch(`/get_file?path=${encodeURIComponent(filePath)}&ref=main`)
@@ -91,53 +88,38 @@ export function SourceViewer({
           is a bug.
         </p>
       )}
-      <div className="grid grid-cols-2">
-        {infoCoords && (
-          <LineInfo
-            line={infoCoords.line}
-            x={infoCoords.x}
-            y={infoCoords.y}
-            coverage={coverage}
-            lineStatus={linesStatus[infoCoords.line]}
-          />
-        )}
-        <div>
-          <SyntaxHighlighter
-            language={language}
-            showLineNumbers
-            showInlineLineNumbers
-            style={themeMap[theme]}
-            lineProps={(lineNumber) => {
-              const id = `line-${lineNumber}`;
-              return {
-                key: lineNumber,
-                id,
-                className: `${
-                  !linesStatus[lineNumber].covered ? uncovered_highlighter : ""
-                }`,
-                onPointerEnter: (e) => {
-                  document.getElementById(id)?.classList.add("hovered-line");
-                },
-                onPointerLeave: (e) => {
-                  document.getElementById(id)?.classList.remove("hovered-line");
-                },
-                onClick: (e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = rect.left + window.scrollX;
-                  const y = rect.top + window.scrollY;
-                  setInfoCoords({ line: lineNumber, x, y });
-                  console.log(e, lineNumber);
-                },
-              };
-            }}
-            wrapLines
-          >
-            {source.replace("```typescript", "")}
-          </SyntaxHighlighter>
-        </div>
-        <div className="border-l-1 border-gray-300">
-          <TestRecommender filePath={filePath} language={language} />
-        </div>
+      <div className="w-1/2">
+        <SyntaxHighlighter
+          language={language}
+          showLineNumbers
+          showInlineLineNumbers
+          style={themeMap[theme]}
+          lineProps={(lineNumber) => {
+            const id = `line-${lineNumber}`;
+            return {
+              key: lineNumber,
+              id,
+              className: `${
+                !linesStatus[lineNumber].covered ? uncovered_highlighter : ""
+              }`,
+              onPointerEnter: (e) => {
+                document.getElementById(id)?.classList.add("hovered-line");
+              },
+              onPointerLeave: (e) => {
+                document.getElementById(id)?.classList.remove("hovered-line");
+              },
+              onClick: (e) => {
+                setLineInfo(linesStatus[lineNumber]);
+              },
+            };
+          }}
+          wrapLines
+        >
+          {source.replace("```typescript", "")}
+        </SyntaxHighlighter>
+      </div>
+      <div className="border-l-1 border-gray-300 fixed top-0 right-0 w-1/2 mt-[200px]">
+        <TestRecommender filePath={filePath} language={language} />
       </div>
     </>
   );

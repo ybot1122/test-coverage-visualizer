@@ -4,6 +4,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { themeMap, useTheme } from "./ThemeContext";
 import { fetchStream } from "@/utils/fetchStream";
 import { Outfit } from "next/font/google";
+import { LineInfo } from "./LineInfo";
 const font = Outfit({
   weight: "400",
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export const TestRecommender = ({
 
   return (
     <div className="flex flex-col p-2 t-[20px]">
+      <LineInfo filePath={filePath} />
       {isLoading ? (
         "responding..."
       ) : (
