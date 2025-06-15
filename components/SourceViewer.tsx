@@ -33,7 +33,7 @@ export function SourceViewer({
   const [source, setSource] = useState("");
   const [error, setError] = useState<string>();
   const { theme } = useTheme();
-  const { setLineInfo } = useLineInfo();
+  const { setLineInfo, lineInfo } = useLineInfo();
 
   useEffect(() => {
     fetch(`/get_file?path=${encodeURIComponent(filePath)}&ref=main`)
@@ -101,6 +101,10 @@ export function SourceViewer({
               id,
               className: `${
                 !linesStatus[lineNumber].covered ? uncovered_highlighter : ""
+              } ${
+                lineInfo && lineInfo.line === lineNumber
+                  ? "border-1 border-black"
+                  : ""
               }`,
               onPointerEnter: (e) => {
                 document.getElementById(id)?.classList.add("hovered-line");
