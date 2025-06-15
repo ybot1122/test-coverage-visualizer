@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { themeMap, useTheme } from "./ThemeContext";
@@ -33,25 +33,41 @@ export const TestRecommender = ({
   const [response, setResponse] = useState("");
   const [testFramework, setTestFramework] = useState("jest");
   const { theme } = useTheme();
-  const { lineInfo, setLineInfo } = useLineInfo();
+  const { lineInfo } = useLineInfo();
   const [currAction, setCurrAction] = useState<
     "summarize_file" | "test_file" | "summarize_line" | "test_line"
   >();
   const { coverageMap } = useCoverageData();
+  const reqId = useRef<number>(0);
+
+  const cancel = useCallback(() => {
+    reqId.current += 1;
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    cancel();
+    setResponse("");
+  }, [lineInfo?.line]);
 
   const updateTestFramework = (event: any) => {
     setTestFramework(event.target.value);
   };
 
-  const fetchRec = async () => {
+  const fetchRec = async (line: boolean) => {
     setIsLoading(true);
-    setCurrAction("test_file");
+    setCurrAction(line ? "test_line" : "test_file");
     setResponse("");
     await fetchStream({
       url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}${
         lineInfo?.line ? `&line=${lineInfo.line}` : ""
       }`,
-      onRead: setResponse,
+      onRead: (rId: number, a: string) => {
+        if (rId === reqId.current) {
+          setResponse(a);
+        }
+      },
+      reqId: reqId.current,
     });
     setIsLoading(false);
   };
@@ -62,7 +78,12 @@ export const TestRecommender = ({
     setResponse("");
     await fetchStream({
       url: `/summarize_file?path=${filePath}&ref=main`,
-      onRead: setResponse,
+      onRead: (rId: number, a: string) => {
+        if (rId === reqId.current) {
+          setResponse(a);
+        }
+      },
+      reqId: reqId.current,
     });
     setIsLoading(false);
   };
@@ -70,11 +91,19 @@ export const TestRecommender = ({
   const fetchLineExplanation = async () => {
     setIsLoading(true);
     setCurrAction("summarize_line");
-  };
-
-  const fetchTestForLine = async () => {
-    setIsLoading(true);
-    setCurrAction("test_line");
+    setResponse("");
+    await fetchStream({
+      url: `/summarize_line?path=${filePath}&ref=main&line=${
+        lineInfo?.line
+      }&coverage=${JSON.stringify(coverageMap?.[filePath])}`,
+      onRead: (rId: number, a: string) => {
+        if (rId === reqId.current) {
+          setResponse(a);
+        }
+      },
+      reqId: reqId.current,
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -82,12 +111,19 @@ export const TestRecommender = ({
       <LineInfo filePath={filePath} />
       {isLoading && currAction ? (
         <div className="text-center">
-          {loaderCopy[currAction]} <Loader />
+          {loaderCopy[currAction]}{" "}
+          <button
+            onClick={cancel}
+            className="border-1 border-black p-1 cursor-pointer hover:border-gray-300"
+          >
+            Cancel
+          </button>
+          <Loader />
         </div>
       ) : !lineInfo ? (
         <div className="grid gap-2 grid-cols-2">
           <SuggestTestsButton
-            onClick={fetchRec}
+            onClick={() => fetchRec(false)}
             updateTestFramework={updateTestFramework}
             testFramework={testFramework}
             label={"Generate Tests for File"}
@@ -99,22 +135,22 @@ export const TestRecommender = ({
             Summarize File
           </button>
         </div>
-      ) : (
+      ) : lineInfo.count > -1 ? (
         <div className="grid gap-2 grid-cols-2 mt-2">
           <SuggestTestsButton
-            onClick={fetchRec}
+            onClick={() => fetchRec(true)}
             updateTestFramework={updateTestFramework}
             testFramework={testFramework}
             label={"Generate Tests for Line"}
           />
           <button
-            onClick={fetchRec}
+            onClick={fetchLineExplanation}
             className="border-1 border-black cursor-pointer h-[100px]  hover:bg-gray-300"
           >
             Explain Coverage for this Line
           </button>
         </div>
-      )}
+      ) : null}
       <div
         className={`${
           response ? "border-1" : ""

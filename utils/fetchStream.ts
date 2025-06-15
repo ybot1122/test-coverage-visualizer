@@ -1,14 +1,16 @@
 export const fetchStream = async ({
   url,
   onRead,
+  reqId,
 }: {
   url: string;
-  onRead: (s: string) => void;
+  onRead: (reqId: number, s: string) => void;
+  reqId: number;
 }) => {
   const response = await fetch(url);
 
   if (!response.body) {
-    onRead("Error failed to make call");
+    onRead(reqId, "Error failed to make call");
     return;
   }
 
@@ -25,7 +27,7 @@ export const fetchStream = async ({
       const chunk = decoder.decode(value, { stream: true });
       accumulated += chunk;
 
-      onRead(accumulated);
+      onRead(reqId, accumulated);
     }
   }
 };

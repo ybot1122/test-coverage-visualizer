@@ -11,10 +11,10 @@ const anthropic = new Anthropic({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get("path");
+  const coverage = searchParams.get("coverage");
   const line = searchParams.get("line");
-  const framework = searchParams.get("framework");
 
-  if (!path) {
+  if (!path || !coverage || !line) {
     return new NextResponse("need path", { status: 400 });
   }
 
@@ -22,21 +22,14 @@ export async function GET(req: NextRequest) {
 
   const file = atob(data.content);
 
-  const prompt = `Can you write unit tests that cover ${
-    line ? `line ${line}` : "this file"
-  }?`;
-
-  const system = line
-    ? " Only write test for specific line, not the whole file. Line numbers are 1-based, not 0-based."
-    : "";
-
   try {
     const stream = await anthropic.messages.create({
       model: "claude-opus-4-20250514",
-      max_tokens: 4096,
+      max_tokens: 500,
       temperature: 1,
       stream: true,
-      system: `Write tests using the framework ${framework}. Give a very brief summary at the start. ${system}`,
+      system:
+        "Line numbers are 1-indexed, not 0-indexed. Just explain the coverage, not the code itself.",
       messages: [
         {
           role: "user",
@@ -52,7 +45,16 @@ export async function GET(req: NextRequest) {
           content: [
             {
               type: "text",
-              text: prompt,
+              text: coverage,
+            },
+          ],
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Given the source code and test coverage report, what can you tell me about line ${line}? Consider statement, branch, and function maps.`,
             },
           ],
         },
