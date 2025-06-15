@@ -48,7 +48,9 @@ export const TestRecommender = ({
     setCurrAction("test_file");
     setResponse("");
     await fetchStream({
-      url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}`,
+      url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}${
+        lineInfo?.line ? `&line=${lineInfo.line}` : ""
+      }`,
       onRead: setResponse,
     });
     setIsLoading(false);

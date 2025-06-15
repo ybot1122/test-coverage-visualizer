@@ -113,13 +113,14 @@ export function SourceViewer({
                 document.getElementById(id)?.classList.remove("hovered-line");
               },
               onClick: (e) => {
+                console.log(linesStatus);
                 setLineInfo(linesStatus[lineNumber]);
               },
             };
           }}
           wrapLines
         >
-          {source.replace("```typescript", "")}
+          {source}
         </SyntaxHighlighter>
       </div>
       <div className="sticky top-0 right-0 w-1/2 self-start">

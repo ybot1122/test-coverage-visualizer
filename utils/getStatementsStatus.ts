@@ -7,6 +7,7 @@ export type LineStatus = {
   covered: boolean;
   line: number;
   fnDecl?: string;
+  raw?: string;
 };
 
 // Annotates lines based on statement coverage
@@ -25,6 +26,14 @@ export function getStatementsStatus(
     return status; // No coverage data available
   }
 
+  for (let i = 0; i < status.length; i++) {
+    const content = document.getElementById(`line-${i}`)?.textContent;
+    status[i].line = i;
+    if (content) {
+      status[i].raw = content;
+    }
+  }
+
   Object.entries(coverage.s).forEach(([id, count]: [string, number]) => {
     if (count === 0) {
       const lineStart = coverage.statementMap[id].start.line;
@@ -41,12 +50,9 @@ export function getStatementsStatus(
     const lineEnd = loc.end.line ?? loc.start.line;
     for (let i = lineStart; i <= lineEnd; i++) {
       const forLine = getCoverageForLine(coverage, i);
-      status[i] = {
-        covered: !forLine.some((r) => !r.covered),
-        count,
-        range: forLine,
-        line: i,
-      };
+      status[i].covered = !forLine.some((r) => !r.covered);
+      status[i].count = count;
+      status[i].range = forLine;
     }
   });
 

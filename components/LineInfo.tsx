@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLineInfo } from "./LineContext";
 import { useCoverageData } from "./CoverageDataContext";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { themeMap, useTheme } from "./ThemeContext";
 
 export const LineInfo = ({ filePath }: { filePath: string }) => {
   const { lineInfo, setLineInfo } = useLineInfo();
   const { coverageMap } = useCoverageData();
+  const { theme } = useTheme();
 
   const [info, setInfo] = useState<{
     fnDecl: string;
@@ -51,6 +54,17 @@ export const LineInfo = ({ filePath }: { filePath: string }) => {
         </div>
       </div>
       {lineInfo?.fnDecl && <div className="p-2">{lineInfo.fnDecl}</div>}
+      {lineInfo.raw && (
+        <SyntaxHighlighter
+          language={"typescript"}
+          showLineNumbers
+          showInlineLineNumbers
+          style={themeMap[theme]}
+          wrapLines
+        >
+          {lineInfo.raw}
+        </SyntaxHighlighter>
+      )}
     </div>
   );
 };
