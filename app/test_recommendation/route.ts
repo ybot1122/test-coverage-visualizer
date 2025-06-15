@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       max_tokens: 4096,
       temperature: 1,
       stream: true,
-      system: `Write tests using the framework ${framework}`,
+      system: `Write tests using the framework ${framework}. Just show the code.`,
       messages: [
         {
           role: "user",

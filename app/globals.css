@@ -36,3 +36,12 @@ a {
   background: lightblue;
   cursor: pointer;
 }
+
+.markdown  ul{
+  list-style: disc;
+  margin-left: 50px;
+}
+
+.markdown h2 {
+  font-size: 1.5rem;
+}
