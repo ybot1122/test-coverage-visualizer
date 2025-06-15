@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { themeMap, useTheme } from "./ThemeContext";
@@ -37,12 +37,16 @@ export const TestRecommender = ({
   const [currAction, setCurrAction] = useState<
     "summarize_file" | "test_file" | "summarize_line" | "test_line"
   >();
-  const controller = useRef<AbortController>(undefined);
+  const reqId = useRef<number>(0);
+
+  const cancel = useCallback(() => {
+    reqId.current += 1;
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
-    console.log(controller);
+    cancel();
     setResponse("");
-    controller.current?.abort();
   }, [lineInfo?.line]);
 
   const updateTestFramework = (event: any) => {
@@ -53,11 +57,16 @@ export const TestRecommender = ({
     setIsLoading(true);
     setCurrAction("test_file");
     setResponse("");
-    controller.current = await fetchStream({
+    await fetchStream({
       url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}${
         lineInfo?.line ? `&line=${lineInfo.line}` : ""
       }`,
-      onRead: setResponse,
+      onRead: (rId: number, a: string) => {
+        if (rId === reqId.current) {
+          setResponse(a);
+        }
+      },
+      reqId: reqId.current,
     });
     setIsLoading(false);
   };
@@ -66,9 +75,14 @@ export const TestRecommender = ({
     setIsLoading(true);
     setCurrAction("summarize_file");
     setResponse("");
-    controller.current = await fetchStream({
+    await fetchStream({
       url: `/summarize_file?path=${filePath}&ref=main`,
-      onRead: setResponse,
+      onRead: (rId: number, a: string) => {
+        if (rId === reqId.current) {
+          setResponse(a);
+        }
+      },
+      reqId: reqId.current,
     });
     setIsLoading(false);
   };
@@ -88,7 +102,14 @@ export const TestRecommender = ({
       <LineInfo filePath={filePath} />
       {isLoading && currAction ? (
         <div className="text-center">
-          {loaderCopy[currAction]} <Loader />
+          {loaderCopy[currAction]}{" "}
+          <button
+            onClick={cancel}
+            className="border-1 border-black p-1 cursor-pointer hover:border-gray-300"
+          >
+            Cancel
+          </button>
+          <Loader />
         </div>
       ) : !lineInfo ? (
         <div className="grid gap-2 grid-cols-2">
