@@ -33,10 +33,11 @@ export const TestRecommender = ({
   const [response, setResponse] = useState("");
   const [testFramework, setTestFramework] = useState("jest");
   const { theme } = useTheme();
-  const { lineInfo, setLineInfo } = useLineInfo();
+  const { lineInfo } = useLineInfo();
   const [currAction, setCurrAction] = useState<
     "summarize_file" | "test_file" | "summarize_line" | "test_line"
   >();
+  const { coverageMap } = useCoverageData();
   const reqId = useRef<number>(0);
 
   const cancel = useCallback(() => {
@@ -53,9 +54,9 @@ export const TestRecommender = ({
     setTestFramework(event.target.value);
   };
 
-  const fetchRec = async () => {
+  const fetchRec = async (line: boolean) => {
     setIsLoading(true);
-    setCurrAction("test_file");
+    setCurrAction(line ? "test_line" : "test_file");
     setResponse("");
     await fetchStream({
       url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}${
@@ -90,11 +91,18 @@ export const TestRecommender = ({
   const fetchLineExplanation = async () => {
     setIsLoading(true);
     setCurrAction("summarize_line");
-  };
-
-  const fetchTestForLine = async () => {
-    setIsLoading(true);
-    setCurrAction("test_line");
+    await fetchStream({
+      url: `/summarize_line?path=${filePath}&ref=main&line=${
+        lineInfo?.line
+      }&coverage=${JSON.stringify(coverageMap?.[filePath])}`,
+      onRead: (rId: number, a: string) => {
+        if (rId === reqId.current) {
+          setResponse(a);
+        }
+      },
+      reqId: reqId.current,
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -114,7 +122,7 @@ export const TestRecommender = ({
       ) : !lineInfo ? (
         <div className="grid gap-2 grid-cols-2">
           <SuggestTestsButton
-            onClick={fetchRec}
+            onClick={() => fetchRec(false)}
             updateTestFramework={updateTestFramework}
             testFramework={testFramework}
             label={"Generate Tests for File"}
@@ -129,13 +137,13 @@ export const TestRecommender = ({
       ) : lineInfo.count > -1 ? (
         <div className="grid gap-2 grid-cols-2 mt-2">
           <SuggestTestsButton
-            onClick={fetchRec}
+            onClick={() => fetchRec(true)}
             updateTestFramework={updateTestFramework}
             testFramework={testFramework}
             label={"Generate Tests for Line"}
           />
           <button
-            onClick={fetchRec}
+            onClick={fetchLineExplanation}
             className="border-1 border-black cursor-pointer h-[100px]  hover:bg-gray-300"
           >
             Explain Coverage for this Line
