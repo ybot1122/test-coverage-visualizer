@@ -7,7 +7,6 @@ import { SyntaxHighlighterTheme } from "../types/SyntaxHighlighterThemes";
 import { getBranchesStatus } from "../utils/getBranchesStatus";
 import { replaceTextWithSpanByColumn } from "../utils/replaceTextWithSpanByColumn";
 import { TestRecommender } from "./TestRecommender";
-import { LineInfo } from "./LineInfo";
 import { useLineInfo } from "./LineContext";
 
 const dark_bg: SyntaxHighlighterTheme[] = [
@@ -119,7 +118,7 @@ export function SourceViewer({
           }}
           wrapLines
         >
-          {source.replace("```typescript", "")}
+          {source}
         </SyntaxHighlighter>
       </div>
       <div className="sticky top-0 right-0 w-1/2 self-start">

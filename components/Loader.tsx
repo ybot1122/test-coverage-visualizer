@@ -10,8 +10,8 @@ export default function () {
       <rect
         fill="#755AFF"
         stroke="#755AFF"
-        stroke-width="30"
-        stroke-linejoin="round"
+        strokeWidth="30"
+        strokeLinejoin="round"
         width="30"
         height="30"
         x="85"

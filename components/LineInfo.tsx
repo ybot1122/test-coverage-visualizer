@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLineInfo } from "./LineContext";
 import { useCoverageData } from "./CoverageDataContext";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { themeMap, useTheme } from "./ThemeContext";
 
 export const LineInfo = ({ filePath }: { filePath: string }) => {
   const { lineInfo, setLineInfo } = useLineInfo();
   const { coverageMap } = useCoverageData();
+  const { theme } = useTheme();
 
   const [info, setInfo] = useState<{
     fnDecl: string;
@@ -38,19 +41,31 @@ export const LineInfo = ({ filePath }: { filePath: string }) => {
 
   return (
     <div className="bg-blue-300 z-3000 w-full">
-      <div className="grid grid-cols-3 p-2">
+      <div className="grid grid-cols-3 p-2 items-center">
         <div>Line {lineInfo.line}</div>
         <div>{exCount}</div>
         <div className="text-right">
           <button
-            className="hover:font-bold cursor-pointer"
+            className="hover:font-bold cursor-pointer border-1 border-gray-600 p-1"
             onClick={() => setLineInfo(undefined)}
           >
             X
           </button>
         </div>
       </div>
-      {info?.fnDecl && <div>{info.fnDecl}</div>}
+      {lineInfo?.fnDecl && <div className="p-2">{lineInfo.fnDecl}</div>}
+      {lineInfo?.branchType && <div className="p-2">{lineInfo.branchType}</div>}
+      {lineInfo.raw && (
+        <div className="p-2">
+          <SyntaxHighlighter
+            language={"typescript"}
+            style={themeMap[theme]}
+            wrapLines
+          >
+            {lineInfo.raw}
+          </SyntaxHighlighter>
+        </div>
+      )}
     </div>
   );
 };
