@@ -81,7 +81,7 @@ export function SourceViewer({
   }, 500);
 
   return (
-    <>
+    <div className="flex">
       {!coverage && (
         <p className="text-red-500">
           Error: Failed to load coverage map. Cannot highlight the lines. This
@@ -118,9 +118,9 @@ export function SourceViewer({
           {source.replace("```typescript", "")}
         </SyntaxHighlighter>
       </div>
-      <div className=" fixed top-0 right-0 w-1/2 mt-[200px]">
+      <div className="sticky top-0 right-0 w-1/2 self-start">
         <TestRecommender filePath={filePath} language={language} />
       </div>
-    </>
+    </div>
   );
 }
