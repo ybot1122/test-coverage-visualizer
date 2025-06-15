@@ -8,6 +8,7 @@ import { LineInfo } from "./LineInfo";
 import { useLineInfo } from "./LineContext";
 import { useCoverageData } from "./CoverageDataContext";
 import Loader from "./Loader";
+import { SuggestTestsButton } from "./SuggestTestsButton";
 
 const loaderCopy = {
   summarize_file: "Generating summary of this file...",
@@ -83,38 +84,12 @@ export const TestRecommender = ({
         </div>
       ) : !lineInfo ? (
         <div className="grid gap-2 grid-cols-2">
-          <div className="flex flex-col">
-            <button
-              onClick={fetchRec}
-              className="border-1 border-black cursor-pointer h-[100px]  hover:bg-gray-300"
-            >
-              Suggest Tests
-            </button>
-            <div className="grid grid-cols-2 gap-2 p-2">
-              <label>
-                <input
-                  type="radio"
-                  name="test-runner"
-                  value="jest"
-                  checked={testFramework === "jest"}
-                  onChange={updateTestFramework}
-                  className="mr-2"
-                />
-                Jest
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="test-runner"
-                  value="vitest"
-                  className="mr-2"
-                  checked={testFramework === "vitest"}
-                  onChange={updateTestFramework}
-                />
-                Vitest
-              </label>
-            </div>
-          </div>
+          <SuggestTestsButton
+            onClick={fetchRec}
+            updateTestFramework={updateTestFramework}
+            testFramework={testFramework}
+            label={"Generate Tests for File"}
+          />
           <button
             onClick={fetchSummary}
             className="border-1 border-black cursor-pointer  h-[100px] hover:bg-gray-300"
@@ -124,17 +99,17 @@ export const TestRecommender = ({
         </div>
       ) : (
         <div className="grid gap-2 grid-cols-2 mt-2">
+          <SuggestTestsButton
+            onClick={fetchRec}
+            updateTestFramework={updateTestFramework}
+            testFramework={testFramework}
+            label={"Generate Tests for Line"}
+          />
           <button
             onClick={fetchRec}
             className="border-1 border-black cursor-pointer h-[100px]  hover:bg-gray-300"
           >
             Explain Coverage for this Line
-          </button>
-          <button
-            onClick={fetchSummary}
-            className="border-1 border-black cursor-pointer  h-[100px] hover:bg-gray-300"
-          >
-            Generate Test For this Line
           </button>
         </div>
       )}

@@ -11,6 +11,7 @@ const anthropic = new Anthropic({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get("path");
+  const line = searchParams.get("line");
   const framework = searchParams.get("framework");
 
   if (!path) {

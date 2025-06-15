@@ -6,6 +6,7 @@ export type LineStatus = {
   range: any[];
   covered: boolean;
   line: number;
+  fnDecl?: string;
 };
 
 // Annotates lines based on statement coverage
@@ -48,5 +49,15 @@ export function getStatementsStatus(
       };
     }
   });
+
+  Object.entries(coverage.fnMap).forEach(
+    ([id, { decl, name }]: [string, any]) => {
+      const fnDecl = `${name} declaration`;
+      for (let i = decl.start.line; i <= decl.end.line; i++) {
+        status[i].fnDecl = fnDecl;
+      }
+    }
+  );
+
   return status;
 }
