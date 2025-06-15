@@ -3,14 +3,14 @@ export default function () {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 200"
-      height={100}
       width={100}
+      height={100}
       className="inline"
     >
       <rect
-        fill="#FF156D"
-        stroke="#FF156D"
-        stroke-width="15"
+        fill="#755AFF"
+        stroke="#755AFF"
+        stroke-width="30"
         stroke-linejoin="round"
         width="30"
         height="30"
