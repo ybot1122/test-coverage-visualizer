@@ -117,15 +117,16 @@ export function SourceViewer({
                 }`,
                 onPointerEnter: (e) => {
                   document.getElementById(id)?.classList.add("hovered-line");
+                },
+                onPointerLeave: (e) => {
+                  document.getElementById(id)?.classList.remove("hovered-line");
+                },
+                onClick: (e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = rect.left + window.scrollX;
                   const y = rect.top + window.scrollY;
                   setInfoCoords({ line: lineNumber, x, y });
                   console.log(e, lineNumber);
-                },
-                onPointerLeave: (e) => {
-                  document.getElementById(id)?.classList.remove("hovered-line");
-                  setInfoCoords(undefined);
                 },
               };
             }}

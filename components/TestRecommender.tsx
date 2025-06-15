@@ -45,11 +45,11 @@ export const TestRecommender = ({
   };
 
   return (
-    <div className="flex flex-col p-2 sticky t-[20px]">
+    <div className="flex flex-col p-2 t-[20px]">
       {isLoading ? (
         "responding..."
       ) : (
-        <div className="grid gap-2 grid-cols-3">
+        <div className="grid gap-2 grid-cols-2">
           <div className="flex flex-col">
             <button
               onClick={fetchRec}

@@ -29,7 +29,7 @@ export const LineInfo = ({
       ([id, { decl, name }]: [string, any]) => {
         for (let i = decl.start.line; i <= decl.end.line; i++) {
           if (i === line) {
-            fnDecl = `; ${name} declaration`;
+            fnDecl = `${name} declaration`;
           }
         }
       }
@@ -46,19 +46,16 @@ export const LineInfo = ({
   }, [line, lineStatus]);
 
   const exCount =
-    lineStatus.count === -1
-      ? ""
-      : lineStatus.count === 0
-      ? "never executed"
-      : `executed ${lineStatus.count}x`;
+    lineStatus.count === -1 ? "" : `executed ${lineStatus.count}x`;
 
   return (
-    <div
-      className="fixed top-0 left-0 bg-blue-300 p-2 w-full h-[40px]"
-      style={{}}
-    >
-      Line {line}: {exCount}
-      {info?.fnDecl} Click for more options.
+    <div className="fixed top-[200px] right-0 bg-blue-300 z-3000 w-[50vw]">
+      <div className="grid grid-cols-3">
+        <div>Line {line}</div>
+        <div>{exCount}</div>
+        <div></div>
+      </div>
+      {info?.fnDecl && <div>{info.fnDecl}</div>}
     </div>
   );
 };
