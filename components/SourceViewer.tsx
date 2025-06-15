@@ -88,7 +88,7 @@ export function SourceViewer({
           is a bug.
         </p>
       )}
-      <div className="w-1/2">
+      <div className="w-1/2 border-r-1 border-gray-300">
         <SyntaxHighlighter
           language={language}
           showLineNumbers
@@ -118,7 +118,7 @@ export function SourceViewer({
           {source.replace("```typescript", "")}
         </SyntaxHighlighter>
       </div>
-      <div className="border-l-1 border-gray-300 fixed top-0 right-0 w-1/2 mt-[200px]">
+      <div className=" fixed top-0 right-0 w-1/2 mt-[200px]">
         <TestRecommender filePath={filePath} language={language} />
       </div>
     </>
