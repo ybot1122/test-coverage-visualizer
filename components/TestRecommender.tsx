@@ -55,12 +55,18 @@ export const TestRecommender = ({
   };
 
   const fetchRec = async (line: boolean) => {
+    const content = document
+      .getElementById(`line-${lineInfo?.line}`)
+      ?.textContent?.replace(/^\d+/, "")
+      .trim();
     setIsLoading(true);
     setCurrAction(line ? "test_line" : "test_file");
     setResponse("");
     await fetchStream({
       url: `/test_recommendation?path=${filePath}&ref=main&framework=${testFramework}${
-        lineInfo?.line ? `&line=${lineInfo.line}` : ""
+        lineInfo?.line
+          ? `&line=${lineInfo.line}&content=${encodeURI(content || "")}`
+          : ""
       }`,
       onRead: (rId: number, a: string) => {
         if (rId === reqId.current) {
@@ -89,13 +95,19 @@ export const TestRecommender = ({
   };
 
   const fetchLineExplanation = async () => {
+    const content = document
+      .getElementById(`line-${lineInfo?.line}`)
+      ?.textContent?.replace(/^\d+/, "")
+      .trim();
     setIsLoading(true);
     setCurrAction("summarize_line");
     setResponse("");
     await fetchStream({
       url: `/summarize_line?path=${filePath}&ref=main&line=${
         lineInfo?.line
-      }&coverage=${JSON.stringify(coverageMap?.[filePath])}`,
+      }&coverage=${JSON.stringify(coverageMap?.[filePath])}&content=${encodeURI(
+        content || ""
+      )}`,
       onRead: (rId: number, a: string) => {
         if (rId === reqId.current) {
           setResponse(a);

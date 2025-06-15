@@ -7,11 +7,10 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const anthropic = new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
 });
-// Given a file, and a line number, recommend a unit test that covers the specified line.
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get("path");
-  const line = searchParams.get("line");
 
   if (!path) {
     return new NextResponse("need path", { status: 400 });

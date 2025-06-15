@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const path = searchParams.get("path");
   const coverage = searchParams.get("coverage");
   const line = searchParams.get("line");
+  const content = searchParams.get("content");
 
   if (!path || !coverage || !line) {
     return new NextResponse("need path", { status: 400 });
@@ -22,14 +23,15 @@ export async function GET(req: NextRequest) {
 
   const file = atob(data.content);
 
+  const lineContent = content ? decodeURI(content) : "";
+
   try {
     const stream = await anthropic.messages.create({
       model: "claude-opus-4-20250514",
       max_tokens: 500,
       temperature: 1,
       stream: true,
-      system:
-        "Line numbers are 1-indexed, not 0-indexed. Just explain the coverage, not the code itself.",
+      system: "Line numbers start from 1 not 0.",
       messages: [
         {
           role: "user",
@@ -54,7 +56,7 @@ export async function GET(req: NextRequest) {
           content: [
             {
               type: "text",
-              text: `Given the source code and test coverage report, what can you tell me about line ${line}? Consider statement, branch, and function maps.`,
+              text: `Given the source code and test coverage report, what can you tell me about line ${line}? The line has this code: ${lineContent}. Consider statement, branch, and function maps. Just explain the coverage, not the code itself.`,
             },
           ],
         },

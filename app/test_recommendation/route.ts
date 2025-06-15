@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const path = searchParams.get("path");
   const line = searchParams.get("line");
   const framework = searchParams.get("framework");
+  const content = searchParams.get("content");
 
   if (!path) {
     return new NextResponse("need path", { status: 400 });
@@ -22,12 +23,14 @@ export async function GET(req: NextRequest) {
 
   const file = atob(data.content);
 
+  const lineContent = content ? decodeURI(content) : "";
+
   const prompt = `Can you write unit tests that cover ${
-    line ? `line ${line}` : "this file"
+    line ? `line ${line}. The line has this code: ${lineContent}` : "this file"
   }?`;
 
   const system = line
-    ? " Only write test for specific line, not the whole file. Line numbers are 1-based, not 0-based."
+    ? " Only write test for specific line, not the whole file. Line numbers start from 1."
     : "";
 
   try {
