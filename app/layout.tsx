@@ -36,6 +36,23 @@ export default async function RootLayout({
         >
           {children}
         </CoverageDataContextProvider>
+        <footer className="p-5 flex flex-col items-center justify-center w-full">
+          <a
+            href="https://github.com/ybot1122/test-coverage-visualizer"
+            className="text-center"
+          >
+            <img src="/github.svg" alt="project on github" width="30" />
+          </a>
+          <p className="mt-2">
+            Source code on{" "}
+            <a
+              href="https://github.com/ybot1122/test-coverage-visualizer"
+              className="text-center"
+            >
+              GitHub
+            </a>
+          </p>
+        </footer>
       </body>
     </html>
   );
