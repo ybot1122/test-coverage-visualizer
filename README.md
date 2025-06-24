@@ -1,6 +1,10 @@
 # Test Coverage Visualizer
 https://test-coverage-visualizer.vercel.app/
 
+- User friendly visualization of test coverage reports
+- Integration with Anthropic SDK to generate test or summary of an entire file
+- Focus on a specific line, generate test or explain the coverage report for that line
+
 ## Provides user friendly visualization of test coverage reports
 Parses JSON summary and coverage map output from Jest or any JSON in istanbul/nyc coverage schema.
 ![Screenshot 2025-06-14 081537](https://github.com/user-attachments/assets/90db1f90-f3b5-423d-85ba-e1a615e8eefa)
